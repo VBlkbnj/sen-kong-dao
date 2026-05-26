@@ -55,6 +55,12 @@
           <div
             class="relative w-full bg-gray-200"
             :style="{ height: imageHeights[idx % imageHeights.length] + 'px' }">
+            <img
+              :src="`https://uapis.cn/api/v1/random/image?seed=${idx}`"
+              class="w-full h-full object-cover"
+              alt=""
+              loading="lazy"
+            />
             <!-- 类型图标 -->
             <div
               v-if="card.type !== 'article'"
