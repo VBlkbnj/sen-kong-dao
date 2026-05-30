@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const slides = [0, 1, 2]
 // 首尾加克隆: [2, 0, 1, 2, 0]
@@ -63,6 +63,7 @@ const cardHeight = 184
 // ---- 拖拽 ----
 const dragging = ref(false)
 const jumping = ref(false)
+const sliding = ref(false)   // transition 进行中，阻止自动播放越界触发
 const dragOffset = ref(0)
 let startX = 0
 
@@ -122,8 +123,10 @@ function finishDrag() {
   dragOffset.value = 0
 
   if (off < -threshold) {
+    sliding.value = true
     virtualIndex.value += 1
   } else if (off > threshold) {
+    sliding.value = true
     virtualIndex.value -= 1
   }
   startAutoPlay()
@@ -134,12 +137,24 @@ function onTransitionEnd() {
   if (dragging.value || jumping.value) return
   if (virtualIndex.value === 0) {
     jumping.value = true
-    virtualIndex.value = slides.length
-    nextTick(() => { jumping.value = false })
+    requestAnimationFrame(() => {
+      virtualIndex.value = slides.length
+      requestAnimationFrame(() => {
+        jumping.value = false
+        sliding.value = false
+      })
+    })
   } else if (virtualIndex.value === LAST) {
     jumping.value = true
-    virtualIndex.value = 1
-    nextTick(() => { jumping.value = false })
+    requestAnimationFrame(() => {
+      virtualIndex.value = 1
+      requestAnimationFrame(() => {
+        jumping.value = false
+        sliding.value = false
+      })
+    })
+  } else {
+    sliding.value = false
   }
 }
 
@@ -149,7 +164,8 @@ let timer: ReturnType<typeof setInterval> | null = null
 function startAutoPlay() {
   stopAutoPlay()
   timer = setInterval(() => {
-    if (!dragging.value) {
+    if (!dragging.value && !sliding.value) {
+      sliding.value = true
       virtualIndex.value += 1
     }
   }, 2000)
@@ -161,6 +177,7 @@ function stopAutoPlay() {
 
 function goTo(index: number) {
   stopAutoPlay()
+  sliding.value = true
   virtualIndex.value = index + 1
   startAutoPlay()
 }

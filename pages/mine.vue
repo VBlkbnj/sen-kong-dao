@@ -65,26 +65,11 @@
       </div>
     </main>
 
-    <!-- ========== 下部 导航栏 ========== -->
-    <nav class="fixed bottom-0 left-0 right-0 z-10 bg-white border-t border-gray-100 h-[10vh]">
-      <div class="flex items-center justify-around h-full max-w-lg mx-auto">
-        <button
-          v-for="item in navItems"
-          :key="item.label"
-          class="flex flex-col items-center justify-center gap-0.5"
-          :class="item.active ? 'text-gray-900' : 'text-gray-400'"
-          @click="goNav(item)"
-        >
-          <Icon :icon="item.icon" class="size-8" />
-          <span class="text-xs">{{ item.label }}</span>
-        </button>
-      </div>
-    </nav>
+    <BottomNav active="mine" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { Icon } from '@iconify/vue'
 
 const router = useRouter()
@@ -107,16 +92,4 @@ const menuItems = [
   { label: '客服中心', icon: 'mdi:headset' },
   { label: '我的奖品', icon: 'mdi:gift-outline' },
 ]
-
-const navItems = ref([
-  { label: '首页', active: false, icon: 'mdi:home-outline',      path: '/' },
-  { label: '关注', active: false, icon: 'mdi:heart-outline',     path: '/follow' },
-  { label: '消息', active: false, icon: 'mdi:message-outline',   path: '/message' },
-  { label: '我的', active: true,  icon: 'mdi:account',           path: '/mine' },
-])
-
-function goNav(item: typeof navItems.value[number]) {
-  if (item.active) return
-  router.push(item.path)
-}
 </script>
