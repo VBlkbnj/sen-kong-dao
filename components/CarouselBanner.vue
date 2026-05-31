@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full overflow-hidden pt-3 pb-2" ref="containerRef">
+  <div class="relative w-full overflow-hidden pt-1 pb-2" ref="containerRef">
     <!-- 轮播轨道 -->
     <div
       class="flex"
